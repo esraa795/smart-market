@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Customer Details</title>
+
+  <style>
+    body{
+      font-family: Arial;
+      margin:0;
+      background: linear-gradient(180deg, #eef2ff 0%, #f7f8fc 100%);
+      color:#111827;
+      padding:22px;
+    }
+    .wrap{ max-width:1100px; margin:0 auto; }
+    .top{
+      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .back{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:10px 14px; border-radius:999px;
+      background:#fff; border:1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+      color:#111827; text-decoration:none; font-weight:900;
+    }
+    .title{ margin:0; font-size:34px; font-weight:900; }
+
+    .grid{ display:grid; grid-template-columns: 1fr; gap:14px; }
+    .card{
+      background:#fff;
+      border:1px solid rgba(0,0,0,0.06);
+      border-radius:22px;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.10);
+      padding:18px;
+      overflow:hidden;
+    }
+    .row{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:12px;
+    }
+    .field{
+      border:1px solid rgba(0,0,0,0.08);
+      border-radius:16px;
+      padding:12px 14px;
+      background:#fbfbff;
+      font-weight:900;
+    }
+    .label{ display:block; font-size:12px; color:#6b7280; font-weight:900; margin-bottom:6px; }
+    .value{ font-size:15px; }
+
+    table{ width:100%; border-collapse:collapse; margin-top:8px; }
+    th,td{ padding:12px 10px; border-bottom:1px solid rgba(0,0,0,0.08); text-align:center; font-weight:800; }
+    th{ background:#f3f4ff; color:#1f2a66; font-weight:900; font-size:14px; }
+    .muted{ color:#6b7280; font-weight:900; margin-top:10px; }
+
+    @media (max-width: 900px){
+      .row{ grid-template-columns:1fr; }
+      .title{ font-size:28px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <a class="back" href="worker.html">⬅ Back</a>
+      <h1 class="title">Customer Details</h1>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="row">
+          <div class="field">
+            <span class="label">Full Name</span>
+            <div id="fullName" class="value"></div>
+          </div>
+          <div class="field">
+            <span class="label">Phone</span>
+            <div id="phone" class="value"></div>
+          </div>
+          <div class="field">
+            <span class="label">Email</span>
+            <div id="email" class="value"></div>
+          </div>
+        </div>
+        <div id="userMsg" class="muted"></div>
+      </div>
+
+      <div class="card">
+        <h2 style="margin:0 0 10px;color:#1f2a66;font-weight:900;">Orders History</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+        <div id="ordersMsg" class="muted"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth, db } from "./firebase.js";
+
+
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+    const API = "http://localhost:3001";
+    const params = new URLSearchParams(location.search);
+    const uid = params.get("uid");
+
+    const fullNameEl = document.getElementById("fullName");
+    const phoneEl = document.getElementById("phone");
+    const emailEl = document.getElementById("email");
+    const userMsg = document.getElementById("userMsg");
+
+    const ordersBody = document.getElementById("ordersBody");
+    const ordersMsg = document.getElementById("ordersMsg");
+
+    function safe(v){ return (v===null || v===undefined) ? "" : String(v); }
+    function formatDate(v){
+      if (!v) return "";
+      const d = new Date(v);
+      return isNaN(d.getTime()) ? "" : d.toLocaleString();
+    }
+
+    async function loadUser(){
+      if (!uid){
+        userMsg.textContent = "Missing uid in URL.";
+        return;
+      }
+      userMsg.textContent = "Loading customer...";
+      const snap = await getDoc(doc(db, "users", uid));
+      if (!snap.exists()){
+        userMsg.textContent = "Customer not found.";
+        return;
+      }
+      const u = snap.data() || {};
+      fullNameEl.textContent = `${safe(u.firstName)} ${safe(u.lastName)}`.trim();
+      phoneEl.textContent = safe(u.phone);
+      emailEl.textContent = safe(u.email);
+      userMsg.textContent = "";
+    }
+
+    async function loadOrders(){
+      if (!uid) return;
+
+      ordersMsg.textContent = "Loading orders...";
+      ordersBody.innerHTML = "";
+
+      // אם אין לך endpoint לפי uid, פשוט מביאים הכל ומסננים בצד לקוח:
+      const res = await fetch(`${API}/orders`);
+      const all = await res.json();
+
+      const mine = all.filter(o => o.userId === uid);
+
+      if (mine.length === 0){
+        ordersMsg.textContent = "No orders for this customer.";
+        return;
+      }
+
+      ordersMsg.textContent = "";
+      mine.forEach(o => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${safe(o.id)}</td>
+          <td>${safe(o.itemsCount)}</td>
+          <td>${safe(o.total)}</td>
+          <td>${safe(o.status)}</td>
+          <td>${formatDate(o.createdAt)}</td>
+        `;
+        ordersBody.appendChild(tr);
+      });
+    }
+
+    loadUser().catch(e => { console.error(e); userMsg.textContent = "Error loading customer."; });
+    loadOrders().catch(e => { console.error(e); ordersMsg.textContent = "Error loading orders."; });
+  </script>
+</body>
+</html>

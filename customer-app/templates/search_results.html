@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ query }} – מוצרים</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            padding: 30px;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            font-size: 22px;
+        }
+
+        /* GRID – כמו קטגוריות */
+        #results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 22px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* CARD */
+        .product-card {
+            background: white;
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(0,0,0,0.12);
+        }
+
+        /* תמונה אחידה */
+        .product-card img {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 12px;
+        }
+
+        /* שם מוצר */
+        .product-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: #222;
+            margin-bottom: 6px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* מחיר */
+        .product-price {
+            font-weight: bold;
+            color: #744f6b;
+            font-size: 14px;
+        }
+
+        .empty {
+            font-size: 16px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<h2>מוצרים בקטגוריה: <strong>{{ query }}</strong></h2>
+
+<ul id="results">
+    <li class="empty">טוען מוצרים...</li>
+</ul>
+<script>
+async function loadResults() {
+    const query = {{ query|tojson }};
+
+    const res = await fetch("/ai-search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query })
+    });
+
+    const data = await res.json();
+    const ul = document.getElementById("results");
+    ul.innerHTML = "";
+
+    if (!data || data.length === 0) {
+        ul.innerHTML = "<li class='empty'>לא נמצאו מוצרים</li>";
+        return;
+    }
+
+    data.forEach(item => {
+        const li = document.createElement("li");
+        li.className = "product-card";
+
+        li.innerHTML = `
+            <img src="${item.imageUrl}" alt="${item.name}">
+            <div class="product-name">${item.name}</div>
+            <div class="product-price">₪${item.price}</div>
+        `;
+
+        // ✅ זה כל מה שהיה חסר
+        li.addEventListener("click", () => {
+            window.location.href =
+              `/product?category=${encodeURIComponent(item.category)}&item_id=${item.item_id}`;
+        });
+
+        ul.appendChild(li);
+    });
+}
+
+loadResults();
+</script>
+
+
+</body>
+</html>

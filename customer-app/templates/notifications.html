@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Notifications</title>
+  <style>
+    body{
+      font-family: Arial;
+      margin:0;
+      direction: rtl;
+      background: linear-gradient(180deg, #eef2ff 0%, #f7f8fc 100%);
+      color:#111827;
+    }
+
+    .page{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 22px 40px;
+    }
+
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom: 18px;
+    }
+
+    .title{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-size: 42px;
+      font-weight: 900;
+      margin:0;
+      direction: ltr;
+    }
+
+    .back-btn{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:#ffffff;
+      border:1px solid rgba(0,0,0,0.08);
+      border-radius: 16px;
+      padding: 10px 14px;
+      cursor:pointer;
+      font-weight: 900;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.10);
+      direction: ltr;
+    }
+    .back-btn img{
+      width:26px;
+      height:26px;
+      object-fit:contain;
+    }
+
+    .section{
+      margin-top: 18px;
+    }
+
+    .section h2{
+      margin: 0 0 10px;
+      font-size: 22px;
+      font-weight: 900;
+      color:#1f2a66;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      direction: ltr;
+    }
+
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+
+    .note{
+      background:#fff;
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.10);
+      border:1px solid rgba(0,0,0,0.06);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:18px;
+    }
+
+    .left{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+    }
+
+    .icon-box{
+      width:64px;
+      height:64px;
+      border-radius: 18px;
+      background:#eef2ff;
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+    }
+    .icon-box img{
+      width:50px;
+      height:50px;
+      object-fit:contain;
+    }
+
+    .text{
+      min-width:0;
+    }
+
+    .msg{
+      font-size: 20px;
+      font-weight: 900;
+      margin: 0 0 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .meta{
+      color:#6b7280;
+      font-size: 14px;
+      font-weight:700;
+    }
+
+    .actions{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      flex:0 0 auto;
+    }
+
+    button{
+      border:none;
+      cursor:pointer;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 900;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      font-size: 15px;
+      min-width: 140px;
+    }
+
+    .mark{ background:#1f2a66; color:#fff; }
+    .go{ background:#885e7d; color:#fff; }
+
+    .empty{
+      color:#6b7280;
+      font-size: 16px;
+      font-weight: 800;
+      margin: 8px 0 0;
+      direction: ltr;
+    }
+
+    @media (max-width: 720px){
+      .title{ font-size: 34px; }
+      .note{ flex-direction: column; align-items: stretch; }
+      .actions{ justify-content:flex-start; }
+      button{ width:100%; min-width:unset; }
+      .msg{ white-space: normal; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+  <div class="header">
+    <h1 class="title"><img src="/static/images/bell.png" style="width:40px; height:40px;">Notifications</h1>
+
+    <button class="back-btn" id="backBtn" type="button">
+      <img src="/static/images/left-arrow.png" alt="back">
+      Back to Home
+    </button>
+  </div>
+
+  <div class="section">
+    <h2> Ready for Pickup</h2>
+    <div id="notesReady" class="list"></div>
+    <p id="emptyReady" class="empty"></p>
+  </div>
+
+  <div class="section">
+    <h2> Delivered</h2>
+    <div id="notesDelivered" class="list"></div>
+    <p id="emptyDelivered" class="empty"></p>
+  </div>
+
+  <p id="empty" class="empty"></p>
+</div>
+
+<script type="module" src="/static/notifications.js"></script>
+<script>
+  document.getElementById("backBtn").onclick = () => {
+    location.href = "/customer";
+  };
+</script>
+
+</body>
+</html>

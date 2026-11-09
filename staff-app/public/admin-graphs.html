@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>גרפים - מנהל</title>
+  <style>
+    :root{
+      --bgA:#0b1020;
+      --bgB:#1b0f2e;
+
+      --card: rgba(255,255,255,.12);
+      --card2: rgba(255,255,255,.08);
+      --stroke: rgba(255,255,255,.14);
+
+      --text:#f8fafc;
+      --muted: rgba(248,250,252,.78);
+
+      --pink:#ff4fd8;
+      --purple:#7c3aed;
+      --blue:#38bdf8;
+      --mint:#34d399;
+
+      --shadow: 0 18px 60px rgba(0,0,0,.28);
+      --radius: 22px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+
+    body{
+      margin:0;
+      padding:22px;
+      direction: rtl;
+      font-family: Arial;
+      color: var(--text);
+
+      background:
+        radial-gradient(900px 500px at 10% 10%, rgba(255,79,216,.20), transparent 55%),
+        radial-gradient(900px 500px at 90% 15%, rgba(56,189,248,.18), transparent 55%),
+        radial-gradient(900px 500px at 65% 90%, rgba(124,58,237,.22), transparent 55%),
+        linear-gradient(180deg, var(--bgA) 0%, var(--bgB) 100%);
+    }
+
+    .wrap{ max-width:1200px; margin:0 auto; }
+
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      padding: 6px 0 10px;
+    }
+
+    h1{
+      margin:0;
+      font-size:34px;
+      font-weight:900;
+      letter-spacing:.2px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    a{
+      color: var(--text);
+      font-weight:900;
+      text-decoration:none;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid var(--stroke);
+      background: linear-gradient(135deg, rgba(255,79,216,.18), rgba(56,189,248,.14));
+      box-shadow: 0 12px 30px rgba(0,0,0,.22);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: transform .18s ease, filter .18s ease;
+    }
+    a:hover{ transform: translateY(-1px); filter: brightness(1.06); }
+
+    .grid{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap:14px;
+    }
+
+    .card{
+      grid-column: span 12;
+      border-radius: var(--radius);
+      border: 1px solid var(--stroke);
+      background: linear-gradient(180deg, var(--card) 0%, var(--card2) 100%);
+      box-shadow: var(--shadow);
+      padding:16px;
+      position:relative;
+      overflow:hidden;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(380px 140px at 15% 0%, rgba(255,79,216,.22), transparent 60%),
+        radial-gradient(380px 140px at 85% 0%, rgba(56,189,248,.18), transparent 60%),
+        radial-gradient(380px 140px at 50% 100%, rgba(124,58,237,.20), transparent 60%);
+      opacity:.85;
+      pointer-events:none;
+    }
+
+    .card h2{
+      margin:0 0 12px;
+      font-size:18px;
+      font-weight:900;
+      position:relative;
+      z-index:1;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color: var(--text);
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .dot{
+      width:10px; height:10px; border-radius:999px;
+      background: linear-gradient(135deg, var(--purple), var(--pink), var(--blue));
+      box-shadow: 0 10px 20px rgba(255,79,216,.18);
+    }
+
+    .chartBox{
+      position: relative;
+      width: 100%;
+      height: 240px;
+      z-index: 1;
+
+      border-radius: 18px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(10, 14, 28, .45);
+      box-shadow: 0 12px 34px rgba(0,0,0,.18);
+      padding: 10px;
+    }
+
+    .chartBox.tall{ height: 280px; }
+
+    .chartBox canvas{
+      width: 100% !important;
+      height: 100% !important;
+      display:block;
+      border-radius: 14px;
+    }
+
+    @media (min-width: 980px){
+      .card.half{ grid-column: span 6; }
+    }
+
+    @media (max-width: 520px){
+      h1{ font-size:28px; }
+      .chartBox{ height:220px; }
+      .chartBox.tall{ height:260px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <h1>📊 גרפים</h1>
+      <a href="/admin.html">⬅ חזרה ללוח מנהל</a>
+    </div>
+
+    <div class="grid">
+      <div class="card half">
+        <h2>🛒 מוצרים הכי נמכרים <span class="tag"><span class="dot"></span>Top</span></h2>
+        <div class="chartBox">
+          <canvas id="chartTopProducts"></canvas>
+        </div>
+      </div>
+
+      <div class="card half">
+        <h2>📩 הפניות הכי נפוצות <span class="tag"><span class="dot"></span>Reasons</span></h2>
+        <div class="chartBox">
+          <canvas id="chartTopReasons"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>💰 רווח לפי ימים (סכום הזמנות) <span class="tag"><span class="dot"></span>Revenue</span></h2>
+        <div class="chartBox tall">
+          <canvas id="chartRevenueByDay"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script type="module" src="./admin-graphs.js"></script>
+</body>
+</html>

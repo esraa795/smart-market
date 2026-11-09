@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Orders</title>
+
+  <style>
+    body{
+      margin:0;
+      font-family: Arial;
+      background: linear-gradient(180deg, #eef2ff 0%, #f7f8fc 100%);
+      color:#111827;
+    }
+
+    .page{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 20px 60px;
+    }
+
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom: 18px;
+    }
+
+    .title{
+      margin:0;
+      font-size: 44px;
+      font-weight: 900;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .muted{
+      color:#6b7280;
+      font-weight: 800;
+      margin: 8px 0 0;
+    }
+
+    /* ✅ Back button */
+    .back-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+      cursor:pointer;
+      text-decoration:none;
+      color:#111827;
+      font-weight:900;
+      transition: transform .15s ease, filter .15s ease;
+    }
+
+    .back-btn:hover{
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
+
+    .back-btn img{
+      width:22px;
+      height:22px;
+      object-fit:contain;
+      display:block;
+    }
+
+    /* Orders grid */
+    .orders{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      margin-top: 16px;
+    }
+
+    .order{
+      background:#fff;
+      border-radius: 22px;
+      border:1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.10);
+      overflow:hidden;
+    }
+
+    .order-head{
+      padding: 18px 18px 12px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+    }
+
+    .order-title{
+      margin:0;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top: 10px;
+      align-items:center;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 900;
+      background:#f3f4f6;
+      border:1px solid rgba(0,0,0,0.06);
+      color:#111827;
+      white-space:nowrap;
+    }
+
+    .status{
+      background:#eef2ff;
+      color:#1f2a66;
+    }
+
+    .total{
+      background:#ecfdf5;
+      color:#065f46;
+    }
+
+    .date{
+      background:#fff7ed;
+      color:#9a3412;
+    }
+
+    .divider{
+      height:1px;
+      background: rgba(0,0,0,0.08);
+      margin: 0 18px;
+    }
+
+    /* Items */
+    .items{
+      padding: 14px 18px 18px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .item{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding: 12px;
+      border-radius: 18px;
+      border:1px solid rgba(0,0,0,0.06);
+      background:#fbfbff;
+    }
+
+    .imgBox{
+      width:72px;
+      height:72px;
+      border-radius: 16px;
+      background:#fff;
+      border:1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+
+    .imgBox img{
+      width:100%;
+      height:100%;
+      object-fit: contain;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+
+    .itemText{
+      font-weight: 900;
+      font-size: 16px;
+      color:#111827;
+    }
+
+    @media (max-width: 720px){
+      .title{ font-size: 34px; }
+      .order-head{ flex-direction:column; }
+      .meta{ gap:8px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="header">
+      <h1 class="title">📦 My Orders</h1>
+
+      <!-- ✅ Back button -->
+      <a class="back-btn" href="/customer">
+        <img src="/static/images/left-arrow.png" alt="Back">
+        Back
+      </a>
+    </div>
+
+    <div id="orders" class="orders"></div>
+    <p id="empty" class="muted"></p>
+  </div>
+
+  <script type="module" src="/static/my-orders.js"></script>
+</body>
+</html>

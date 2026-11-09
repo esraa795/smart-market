@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <title>ליקוט הזמנה</title>
+  <style>
+    body{
+      font-family: Arial;
+      direction: rtl;
+      margin:0;
+      background: linear-gradient(180deg, #eef2ff 0%, #f7f8fc 100%);
+      color:#111827;
+      padding: 22px;
+    }
+
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .top{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 12px;
+    }
+
+    h1{
+      margin:0;
+      font-size: 38px;
+      font-weight: 900;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .status{
+      font-weight:900;
+      color:#1f2a66;
+      background:#ffffff;
+      border:1px solid rgba(0,0,0,0.08);
+      padding:10px 14px;
+      border-radius: 14px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+      white-space:nowrap;
+    }
+
+    .card{
+      background:#fff;
+      border:1px solid rgba(0,0,0,0.06);
+      border-radius: 22px;
+      padding: 16px;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.10);
+      margin-top: 12px;
+    }
+
+    .item{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(0,0,0,0.06);
+      background:#fbfbff;
+      margin-bottom: 12px;
+    }
+
+    .check{
+      width: 26px;
+      height: 26px;
+      accent-color: #16a34a;   /* ירוק יפה */
+      cursor:pointer;
+      flex: 0 0 auto;
+    }
+
+    .check:disabled{
+      cursor:not-allowed;
+      opacity: 0.8;
+    }
+
+    .info{
+      flex:1;
+      min-width:0;
+    }
+
+    .name{
+      font-size: 18px;
+      font-weight: 900;
+      margin:0 0 6px;
+    }
+
+    .sku{
+      font-size: 13px;
+      font-weight: 800;
+      color:#6b7280;
+      margin:0;
+    }
+
+    /* תמונה לא נחתכת */
+    .imgBox{
+      width: 92px;
+      height: 92px;
+      border-radius: 18px;
+      background:#fff;
+      border:1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+    .imgBox img{
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* ✅ לא חותך */
+      padding: 8px;
+      box-sizing: border-box;
+    }
+
+    .bar{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    button{
+      border:none;
+      cursor:pointer;
+      border-radius: 16px;
+      padding: 12px 16px;
+      font-size: 16px;
+      font-weight: 900;
+      min-width: 170px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    }
+
+    #finishBtn{ background:#1f2a66; color:#fff; }
+    #deliveredBtn{ background:#16a34a; color:#fff; }
+
+    button:disabled{
+      opacity:0.5;
+      cursor:not-allowed;
+      box-shadow:none;
+    }
+
+    .hint{
+      color:#6b7280;
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    @media (max-width: 720px){
+      h1{ font-size: 30px; }
+      .item{ align-items:flex-start; }
+      .imgBox{ width: 78px; height: 78px; }
+      button{ width:100%; min-width:unset; }
+      .status{ width:100%; text-align:center; }
+      .top{ flex-direction:column; align-items:stretch; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <h1>🛒 ליקוט הזמנה</h1>
+    <div id="statusLine" class="status"></div>
+  </div>
+
+  <div class="card">
+    <div id="items"></div>
+
+    <div class="bar">
+      <button id="finishBtn" style="display:none;">✅ סיום ליקוט</button>
+      <button id="deliveredBtn" style="display:none;">✅ סמן כנמסר</button>
+      <span id="hint" class="hint"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = "http://localhost:3001";
+  const params = new URLSearchParams(location.search);
+  const orderId = params.get("id");
+
+  const itemsDiv = document.getElementById("items");
+  const statusLine = document.getElementById("statusLine");
+  const finishBtn = document.getElementById("finishBtn");
+  const deliveredBtn = document.getElementById("deliveredBtn");
+  const hint = document.getElementById("hint");
+
+  let status = "";
+  let allChecked = false;
+
+  function updateButtons() {
+    finishBtn.style.display = "none";
+    deliveredBtn.style.display = "none";
+    hint.textContent = "";
+
+    if (status === "paid" || status === "pending") {
+      finishBtn.style.display = "inline-block";
+      finishBtn.disabled = !allChecked;
+      hint.textContent = "סמני את כל הפריטים ואז לחצי 'סיום ליקוט'.";
+      return;
+    }
+
+    if (status === "ready_for_pickup") {
+      deliveredBtn.style.display = "inline-block";
+      deliveredBtn.disabled = false;
+      hint.textContent = "ההזמנה מוכנה לאיסוף. לאחר מסירה לחצי 'סמן כנמסר'.";
+      return;
+    }
+
+    if (status === "delivered") {
+      hint.textContent = "ההזמנה נמסרה. אי אפשר לשנות סטטוס.";
+      return;
+    }
+
+    hint.textContent = "סטטוס לא ידוע.";
+  }
+
+  function checkAll() {
+    const checks = document.querySelectorAll(".check");
+    allChecked = [...checks].every(c => c.checked);
+    updateButtons();
+  }
+
+  async function loadOrder() {
+    const res = await fetch(`${API}/orders/${orderId}`);
+    const order = await res.json();
+
+    status = order.status || "";
+    statusLine.textContent = `סטטוס: ${status}`;
+
+    itemsDiv.innerHTML = "";
+
+    (order.items || []).forEach((item) => {
+      const div = document.createElement("div");
+      div.className = "item";
+
+      div.innerHTML = `
+        <input type="checkbox" class="check">
+        <div class="info">
+          <p class="name">${item.name} × ${item.qty}</p>
+          <p class="sku">מק״ט: ${item.productId || ""}</p>
+        </div>
+        <div class="imgBox">
+          <img src="${item.imageUrl || ""}" alt="">
+        </div>
+      `;
+
+      itemsDiv.appendChild(div);
+    });
+
+    // אם זה לא שלב ליקוט - נועלים צ׳קבוקס (נכון!)
+    if (status !== "paid" && status !== "pending") {
+      document.querySelectorAll(".check").forEach(c => {
+        c.disabled = true;
+        c.checked = true;   // ✅ מראה V גדול וברור
+      });
+      allChecked = true;
+    } else {
+      document.querySelectorAll(".check").forEach(c =>
+        c.addEventListener("change", checkAll)
+      );
+      allChecked = false;
+    }
+
+    updateButtons();
+  }
+
+  finishBtn.onclick = async () => {
+    const r = await fetch(`${API}/orders/${orderId}/picked`, { method: "POST" });
+
+    if (!r.ok) {
+      const data = await r.json().catch(() => ({}));
+      alert(data.error || "שגיאה");
+      return;
+    }
+
+    alert("📦 הזמנה מוכנה לאיסוף");
+    location.href = "worker.html";
+  };
+
+  deliveredBtn.onclick = async () => {
+    const r = await fetch(`${API}/orders/${orderId}/delivered`, { method: "POST" });
+
+    if (!r.ok) {
+      const data = await r.json().catch(() => ({}));
+      alert(data.error || "שגיאה");
+      return;
+    }
+
+    alert("✅ הזמנה נמסרה");
+    location.href = "worker.html";
+  };
+
+  loadOrder();
+</script>
+
+</body>
+</html>

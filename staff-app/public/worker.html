@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <title>ניהול הזמנות</title>
+  <style>
+    body{
+      font-family: Arial;
+      margin:0;
+      direction: rtl;
+      background: linear-gradient(180deg, #eef2ff 0%, #f7f8fc 100%);
+      color:#111827;
+      padding: 22px;
+    }
+
+    .wrap{ max-width: 1200px; margin: 0 auto; }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom: 14px;
+    }
+
+    .title{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-size: 38px;
+      font-weight: 900;
+      margin:0;
+      white-space:nowrap;
+    }
+
+    .search{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .search input{
+      padding:12px 14px;
+      width:320px;
+      border:1px solid rgba(0,0,0,0.12);
+      border-radius:14px;
+      background:#fff;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.06);
+      font-weight:800;
+      outline:none;
+    }
+
+    .btn{
+      padding:12px 16px;
+      border:none;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:900;
+      box-shadow: 0 12px 26px rgba(0,0,0,0.10);
+    }
+    .btn-primary{ background:#1f2a66; color:#fff; }
+    .btn-secondary{ background:#555; color:#fff; }
+
+    .tabs{
+      display:flex;
+      gap:10px;
+      margin: 8px 0 16px;
+      flex-wrap:wrap;
+    }
+
+    .tab-btn{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:12px 14px;
+      border:1px solid rgba(0,0,0,0.10);
+      border-radius:16px;
+      cursor:pointer;
+      background:#ffffff;
+      font-weight:900;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.06);
+    }
+
+    .tab-btn.active{
+      background:#1f2a66;
+      color:#fff;
+      border-color:#1f2a66;
+    }
+
+    .badge{
+      display:inline-grid;
+      place-items:center;
+      min-width: 28px;
+      height: 28px;
+      padding: 0 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      background: rgba(0,0,0,0.06);
+      color:#111827;
+    }
+    .tab-btn.active .badge{
+      background: rgba(255,255,255,0.18);
+      color:#fff;
+    }
+
+    .panel{ display:none; }
+    .panel.active{ display:block; }
+
+    .card{
+      background:#fff;
+      border:1px solid rgba(0,0,0,0.06);
+      border-radius:22px;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.10);
+      overflow:hidden;
+    }
+
+    table{
+      width:100%;
+      border-collapse: collapse;
+    }
+
+    th, td{
+      padding: 12px 10px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      text-align:center;
+      font-weight:800;
+    }
+
+    th{
+      background:#f3f4ff;
+      color:#1f2a66;
+      font-weight:900;
+      font-size: 14px;
+    }
+
+    tr:hover td{
+      background:#fafaff;
+    }
+
+    .muted{
+      color:#6b7280;
+      padding: 14px 12px;
+      font-weight:900;
+    }
+
+    .actions button{
+      padding:10px 12px;
+      border-radius:14px;
+      border:none;
+      cursor:pointer;
+      font-weight:900;
+      background:#fff;
+      border:1px solid rgba(0,0,0,0.14);
+    }
+    .actions button:hover{
+      background:#f7f7ff;
+    }
+    .cust-link{
+  color:#1f2a66;
+  font-weight:900;
+  text-decoration:none;
+}
+.cust-link:hover{ text-decoration:underline; }
+
+
+    @media (max-width: 900px){
+      .title{ font-size: 30px; }
+      .search input{ width: 100%; }
+      .topbar{ flex-direction: column; align-items:stretch; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="topbar">
+    <h1 class="title">📦 ניהול הזמנות</h1>
+
+    <div class="search">
+      <input id="searchInput" placeholder="חיפוש לפי מספר הזמנה..." />
+      <button id="searchBtn" class="btn btn-primary">חפש</button>
+      <button id="clearBtn" class="btn btn-secondary">נקה</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="picking">
+      🛒 לליקוט <span id="countPicking" class="badge">0</span>
+    </button>
+
+    <button class="tab-btn" data-tab="ready">
+      📦 מוכנות לאיסוף <span id="countReady" class="badge">0</span>
+    </button>
+
+    <button class="tab-btn" data-tab="delivered">
+      ✅ נמסרו <span id="countDelivered" class="badge">0</span>
+    </button>
+  </div>
+
+  <!-- 🛒 לליקוט -->
+  <div id="panel-picking" class="panel active">
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>מספר הזמנה</th>
+            <th>שם לקוח</th>
+            <th>כמות פריטים</th>
+            <th>סכום</th>
+            <th>סטטוס</th>
+            <th>תאריך</th>
+            <th>פעולות</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyPicking"></tbody>
+      </table>
+      <div id="emptyPicking" class="muted"></div>
+    </div>
+  </div>
+
+  <!-- 📦 מוכנות לאיסוף -->
+  <div id="panel-ready" class="panel">
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>מספר הזמנה</th>
+            <th>שם לקוח</th>
+            <th>כמות פריטים</th>
+            <th>סכום</th>
+            <th>סטטוס</th>
+            <th>תאריך</th>
+            <th>פעולות</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyReady"></tbody>
+      </table>
+      <div id="emptyReady" class="muted"></div>
+    </div>
+  </div>
+
+  <!-- ✅ נמסרו -->
+  <div id="panel-delivered" class="panel">
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>מספר הזמנה</th>
+            <th>שם לקוח</th>
+            <th>כמות פריטים</th>
+            <th>סכום</th>
+            <th>סטטוס</th>
+            <th>תאריך</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyDelivered"></tbody>
+      </table>
+      <div id="emptyDelivered" class="muted"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const API = "http://localhost:3001";
+
+  const tbodyPicking = document.getElementById("tbodyPicking");
+  const tbodyReady = document.getElementById("tbodyReady");
+  const tbodyDelivered = document.getElementById("tbodyDelivered");
+
+  const emptyPicking = document.getElementById("emptyPicking");
+  const emptyReady = document.getElementById("emptyReady");
+  const emptyDelivered = document.getElementById("emptyDelivered");
+
+  const countPicking = document.getElementById("countPicking");
+  const countReady = document.getElementById("countReady");
+  const countDelivered = document.getElementById("countDelivered");
+
+  const searchInput = document.getElementById("searchInput");
+  const searchBtn = document.getElementById("searchBtn");
+  const clearBtn = document.getElementById("clearBtn");
+
+  let allOrders = [];
+
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+
+      btn.classList.add("active");
+      const tab = btn.dataset.tab;
+      document.getElementById(`panel-${tab}`).classList.add("active");
+    };
+  });
+
+  function formatDate(v) {
+    if (!v) return "";
+    const d = new Date(v);
+    return isNaN(d.getTime()) ? "" : d.toLocaleString();
+  }
+
+  function openOrder(id) {
+    location.href = `worker-order.html?id=${id}`;
+  }
+
+  function safeText(v) {
+    return (v === null || v === undefined) ? "" : String(v);
+  }
+
+  function render(orders) {
+    tbodyPicking.innerHTML = "";
+    tbodyReady.innerHTML = "";
+    tbodyDelivered.innerHTML = "";
+
+    emptyPicking.textContent = "";
+    emptyReady.textContent = "";
+    emptyDelivered.textContent = "";
+
+    const picking = orders.filter(o => o.status === "paid" || o.status === "pending");
+    const ready = orders.filter(o => o.status === "ready_for_pickup");
+    const delivered = orders.filter(o => o.status === "delivered");
+
+    countPicking.textContent = picking.length;
+    countReady.textContent = ready.length;
+    countDelivered.textContent = delivered.length;
+
+    if (picking.length === 0) emptyPicking.textContent = "אין הזמנות לליקוט";
+    if (ready.length === 0) emptyReady.textContent = "אין הזמנות שמוכנות לאיסוף";
+    if (delivered.length === 0) emptyDelivered.textContent = "אין הזמנות שנמסרו";
+
+    picking.forEach(o => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${safeText(o.id)}</td>
+        <td>
+        <a class="cust-link" href="worker-customer.html?uid=${encodeURIComponent(o.userId)}">
+        ${safeText(o.customerName)}
+         </a>  </td>
+        <td>${safeText(o.itemsCount)}</td>
+        <td>${safeText(o.total)}</td>
+        <td>${safeText(o.status)}</td>
+        <td>${formatDate(o.createdAt)}</td>
+        <td class="actions">
+          <button onclick="openOrder('${o.id}')">פתח לליקוט</button>
+        </td>
+      `;
+      tbodyPicking.appendChild(tr);
+    });
+
+    ready.forEach(o => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${safeText(o.id)}</td>
+        <td>${safeText(o.customerName)}</td>
+        <td>${safeText(o.itemsCount)}</td>
+        <td>${safeText(o.total)}</td>
+        <td>${safeText(o.status)}</td>
+        <td>${formatDate(o.createdAt)}</td>
+        <td class="actions">
+          <button onclick="openOrder('${o.id}')">פתח</button>
+        </td>
+      `;
+      tbodyReady.appendChild(tr);
+    });
+
+    delivered.forEach(o => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${safeText(o.id)}</td>
+        <td>${safeText(o.customerName)}</td>
+        <td>${safeText(o.itemsCount)}</td>
+        <td>${safeText(o.total)}</td>
+        <td>${safeText(o.status)}</td>
+        <td>${formatDate(o.createdAt)}</td>
+      `;
+      tbodyDelivered.appendChild(tr);
+    });
+  }
+
+  async function loadOrders() {
+    const res = await fetch(`${API}/orders`);
+    allOrders = await res.json();
+    render(allOrders);
+  }
+
+  searchBtn.onclick = () => {
+    const v = searchInput.value.trim();
+    if (!v) return render(allOrders);
+
+    const filtered = allOrders.filter(o => (o.id || "").includes(v));
+    render(filtered);
+  };
+
+  clearBtn.onclick = () => {
+    searchInput.value = "";
+    render(allOrders);
+  };
+
+  loadOrders();
+  window.openOrder = openOrder;
+</script>
+
+</body>
+</html>

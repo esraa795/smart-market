@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Payment</title>
+
+  <style>
+    :root{
+      --bg1:#eef2ff;
+      --bg2:#f7f8fc;
+      --card:rgba(255,255,255,0.92);
+      --stroke:rgba(0,0,0,0.08);
+      --text:#111827;
+      --muted:#6b7280;
+      --shadow:0 22px 60px rgba(0,0,0,0.12);
+      --focus:0 0 0 4px rgba(31,42,102,0.12);
+      --green:#16a34a;
+      --greenHover:#15803d;
+      --radius:22px;
+    }
+
+    *{ box-sizing:border-box; font-family:Arial, sans-serif; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      padding:44px 18px;
+      background:
+        radial-gradient(900px 520px at 20% 10%, rgba(127,189,179,0.22), transparent 60%),
+        radial-gradient(900px 520px at 80% 18%, rgba(246,182,200,0.20), transparent 60%),
+        linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%);
+      color:var(--text);
+    }
+
+    /* Back button (kept simple, not the focus) */
+    .back-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      background: rgba(255,255,255,0.85);
+      border:1px solid var(--stroke);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+      cursor:pointer;
+      text-decoration:none;
+      color:var(--text);
+      font-weight:900;
+      transition: transform .15s ease, filter .15s ease;
+      margin-bottom:18px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .back-btn:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+    .back-btn img{ width:22px; height:22px; object-fit:contain; display:block; }
+
+    .payment-box{
+      width:min(560px, 94vw);
+      margin: 0 auto;
+      background: var(--card);
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:34px 34px 30px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .payment-box::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: linear-gradient(135deg, rgba(127,189,179,0.16), rgba(246,182,200,0.12), transparent 70%);
+      opacity:.7;
+      pointer-events:none;
+    }
+
+    h1{
+      position:relative;
+      z-index:1;
+      margin:0 0 10px;
+      font-size:38px;
+      font-weight:900;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      letter-spacing:.2px;
+    }
+
+    p.note{
+      position:relative;
+      z-index:1;
+      margin:0 0 22px;
+      font-size:13px;
+      color:var(--muted);
+      font-weight:800;
+    }
+
+    label{
+      position:relative;
+      z-index:1;
+      display:block;
+      font-size:13px;
+      font-weight:900;
+      margin:14px 0 7px;
+      color:#1f2a66;
+    }
+
+    input{
+      position:relative;
+      z-index:1;
+      width:100%;
+      padding:13px 14px;
+      font-size:15px;
+      border-radius:14px;
+      border:1px solid rgba(0,0,0,0.12);
+      background: rgba(250,250,250,0.92);
+      outline:none;
+      transition: box-shadow .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    input:focus{
+      border-color: rgba(127,189,179,0.95);
+      background:#fff;
+      box-shadow: var(--focus);
+    }
+
+    .row{
+      position:relative;
+      z-index:1;
+      display:flex;
+      gap:12px;
+    }
+
+    .row > div{ flex:1; }
+
+    button{
+      position:relative;
+      z-index:1;
+      margin-top:26px;
+      width:100%;
+      background: var(--green);
+      color:#fff;
+      border:none;
+      padding:16px;
+      font-size:18px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:900;
+      letter-spacing:.2px;
+      box-shadow: 0 14px 28px rgba(22,163,74,0.22);
+      transition: transform .15s ease, filter .15s ease, background .15s ease;
+    }
+
+    button:hover{
+      background: var(--greenHover);
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+    }
+
+    @media (max-width:560px){
+      .payment-box{ padding:26px 20px; }
+      h1{ font-size:30px; }
+      .row{ flex-direction:column; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <a class="back-btn" href="/customer">
+    <img src="/static/images/left-arrow.png" alt="Back">
+    Back
+  </a>
+
+  <div class="payment-box">
+
+    <h1>💳 Payment</h1>
+   
+
+    <label>Cardholder Name</label>
+    <input type="text" placeholder="Test User">
+
+    <label>Card Number</label>
+    <input type="text" recognizer placeholder="**** **** **** 1111">
+
+    <div class="row">
+      <div>
+        <label>Expiry Date</label>
+        <input type="text" placeholder="12 / 29">
+      </div>
+      <div>
+        <label>CVV</label>
+        <input type="text" placeholder="123">
+      </div>
+    </div>
+
+    <button id="payBtn">Pay Now</button>
+
+  </div>
+
+  <script type="module" src="/static/payment.js"></script>
+
+</body>
+</html>

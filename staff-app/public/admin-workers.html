@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ניהול עובדים</title>
+
+  <style>
+    :root{
+      --bg1:#0b1022;
+      --bg2:#1b0f2b;
+      --card: rgba(255,255,255,0.08);
+      --stroke: rgba(255,255,255,0.14);
+      --text: #e9eefc;
+      --muted: rgba(233,238,252,0.75);
+      --shadow: 0 18px 60px rgba(0,0,0,0.45);
+      --brand:#7fbdb3;
+      --danger:#b91c1c;
+    }
+
+    *{ box-sizing:border-box; font-family: Arial, sans-serif; }
+    body{
+      margin:0;
+      direction:rtl;
+      min-height:100vh;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 15% 10%, rgba(153,102,255,0.25), transparent 55%),
+        radial-gradient(1000px 500px at 85% 30%, rgba(0,209,255,0.18), transparent 55%),
+        linear-gradient(135deg, var(--bg2), var(--bg1));
+      padding:26px 18px;
+    }
+
+    .wrap{ max-width:1100px; margin:0 auto; }
+
+    .top{
+      display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    h1{ margin:0; font-size:34px; font-weight:900; }
+
+    a{
+      color:var(--text);
+      text-decoration:none;
+      font-weight:900;
+      background: rgba(255,255,255,0.08);
+      border:1px solid var(--stroke);
+      padding:10px 14px;
+      border-radius:999px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .grid{ display:grid; grid-template-columns: 1fr; gap:16px; }
+
+    .card{
+      background: var(--card);
+      border:1px solid var(--stroke);
+      border-radius:22px;
+      padding:18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    h2{ margin:0 0 12px; font-size:20px; font-weight:900; }
+
+    .row{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
+    }
+    @media(min-width:900px){ .row{ grid-template-columns:repeat(3,1fr); } }
+
+    label{ display:block; margin:6px 0 6px; font-weight:900; color:var(--muted); }
+    input{
+      width:100%;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.06);
+      color:var(--text);
+      outline:none;
+      font-weight:800;
+    }
+    input::placeholder{ color: rgba(233,238,252,0.55); }
+
+    .btns{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+    button{
+      padding:12px 14px;
+      border:none;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:900;
+    }
+    .primary{ background: var(--brand); color:#0b1022; }
+    .danger{ background: var(--danger); color:#fff; }
+
+    .msg{ margin-top:10px; color: var(--muted); font-weight:900; min-height:18px; }
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+    }
+    th, td{
+      padding:12px 10px;
+      border-bottom:1px solid rgba(255,255,255,0.10);
+      text-align:center;
+      font-weight:800;
+    }
+    th{ color:var(--text); font-weight:900; background: rgba(255,255,255,0.08); }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <h1>👥 ניהול עובדים</h1>
+      <a href="/admin.html">⬅ חזרה ללוח מנהל</a>
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+        <h2>➕ הוספת עובד חדש</h2>
+
+        <div class="row">
+          <div>
+            <label>שם פרטי</label>
+            <input id="firstName" placeholder="שם פרטי" />
+          </div>
+          <div>
+            <label>שם משפחה</label>
+            <input id="lastName" placeholder="שם משפחה" />
+          </div>
+          <div>
+            <label>טלפון</label>
+            <input id="phone" placeholder="05X-XXXXXXX" />
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:10px;">
+          <div>
+            <label>Email</label>
+            <input id="email" type="email" placeholder="worker@email.com" />
+          </div>
+          <div>
+            <label>Password (לעובד)</label>
+            <input id="password" type="password" placeholder="Choose a password" />
+          </div>
+          <div>
+            <label>כתובת</label>
+            <input id="address" placeholder="כתובת (אופציונלי)" />
+          </div>
+        </div>
+
+        <div class="btns">
+          <button class="primary" id="createWorkerBtn">💾 יצירת עובד</button>
+        </div>
+
+        <div class="msg" id="msg"></div>
+      </div>
+
+      <div class="card">
+        <h2>📋 רשימת עובדים</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>שם</th>
+              <th>Email</th>
+              <th>טלפון</th>
+              <th>פעולה</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="msg" id="empty"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="./admin-workers.js"></script>
+</body>
+</html>

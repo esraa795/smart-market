@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ product.Name }}</title>
+
+  <style>
+    :root{
+      --bg1:#eef2ff;
+      --bg2:#f7f8fc;
+
+      --card: rgba(255,255,255,0.82);
+      --stroke: rgba(0,0,0,0.08);
+
+      --text:#111827;
+      --muted:#6b7280;
+
+      --brand:#744f6b;
+      --shadow: 0 22px 60px rgba(0,0,0,0.12);
+      --focus: 0 0 0 4px rgba(116,79,107,0.18);
+      --radius: 22px;
+    }
+
+    *{ box-sizing:border-box; font-family: Arial, sans-serif; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      padding:44px 18px 70px;
+      background:
+        radial-gradient(900px 520px at 20% 10%, rgba(127,189,179,0.18), transparent 60%),
+        radial-gradient(900px 520px at 80% 18%, rgba(246,182,200,0.18), transparent 60%),
+        linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%);
+      color:var(--text);
+    }
+
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    /* Back button */
+    .back-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      background: rgba(255,255,255,0.72);
+      border:1px solid var(--stroke);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+      cursor:pointer;
+      text-decoration:none;
+      color:var(--text);
+      font-weight:900;
+      transition: transform .15s ease, filter .15s ease;
+      margin-bottom:16px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .back-btn:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+    .back-btn img{ width:22px; height:22px; object-fit:contain; display:block; }
+
+    .card{
+      background: var(--card);
+      border:1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: linear-gradient(135deg, rgba(127,189,179,0.14), rgba(246,182,200,0.12), transparent 70%);
+      opacity:.75;
+      pointer-events:none;
+    }
+
+    /* PRODUCT BOX */
+    .product-box{
+      padding: 26px;
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      gap: 26px;
+      align-items:center;
+      position:relative;
+      z-index:1;
+    }
+
+    .imgBox{
+      background: rgba(255,255,255,0.78);
+      border:1px solid rgba(0,0,0,0.06);
+      border-radius: 18px;
+      box-shadow: 0 16px 34px rgba(0,0,0,0.10);
+      padding:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height: 320px;
+    }
+
+    .imgBox img{
+      width:100%;
+      height:100%;
+      object-fit: contain;
+    }
+
+    h2{
+      margin:0 0 10px;
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing:.2px;
+    }
+
+    .price{
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--brand);
+      margin: 8px 0 14px;
+    }
+
+    .desc{
+      margin:0 0 18px;
+      color: var(--text);
+      line-height:1.5;
+      font-weight: 700;
+    }
+
+    .actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:center;
+      margin-top: 6px;
+    }
+
+    .qtyWrap{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:900;
+      color: var(--muted);
+    }
+
+    .actions input{
+      width: 90px;
+      padding:10px 12px;
+      border-radius: 12px;
+      border:1px solid rgba(0,0,0,0.12);
+      background: rgba(255,255,255,0.9);
+      font-weight:900;
+      outline:none;
+      transition: box-shadow .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .actions input:focus{
+      border-color: rgba(116,79,107,0.75);
+      background:#fff;
+      box-shadow: var(--focus);
+    }
+
+    .btn{
+      border:none;
+      border-radius: 12px;
+      padding: 11px 16px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor:pointer;
+      transition: transform .15s ease, filter .15s ease;
+      box-shadow: 0 14px 28px rgba(0,0,0,0.10);
+      white-space:nowrap;
+    }
+
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.04); }
+
+    .btn-primary{
+      background: var(--brand);
+      color:#fff;
+    }
+
+    .btn-outline{
+      background: rgba(255,255,255,0.75);
+      border:1px solid rgba(116,79,107,0.35);
+      color: var(--brand);
+    }
+
+    /* AI BOX */
+    .ai-box{
+      margin-top: 18px;
+      padding: 22px 26px;
+      position:relative;
+      z-index:1;
+    }
+
+    .ai-title{
+      margin:0 0 12px;
+      font-size: 18px;
+      font-weight: 900;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#1f2a66;
+    }
+
+    .ai-row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .ai-box input{
+      flex: 1 1 360px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border:1px solid rgba(0,0,0,0.12);
+      background: rgba(255,255,255,0.9);
+      font-size: 14px;
+      font-weight: 800;
+      outline:none;
+      transition: box-shadow .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .ai-box input:focus{
+      border-color: rgba(116,79,107,0.75);
+      background:#fff;
+      box-shadow: var(--focus);
+    }
+
+    .ai-answer{
+      margin-top: 14px;
+      white-space: pre-line;
+      font-size: 14px;
+      color:#111827;
+      font-weight: 800;
+      padding: 14px;
+      border-radius: 16px;
+      border:1px solid rgba(0,0,0,0.06);
+      background: rgba(255,255,255,0.72);
+      min-height: 48px;
+    }
+
+    @media (max-width: 860px){
+      .product-box{ grid-template-columns: 1fr; }
+      .imgBox{ height: 280px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- ✅ Back button -->
+    <a class="back-btn" href="/customer">
+      <img src="/static/images/left-arrow.png" alt="Back">
+      Back
+    </a>
+
+    <!-- ================= PRODUCT ================= -->
+    <div class="card product-box"
+         data-id="{{ product_id }}"
+         data-name="{{ product.Name }}"
+         data-price="{{ product.price }}"
+         data-image="{{ product.imageUrl }}">
+
+      <div class="imgBox">
+        <img src="{{ product.imageUrl }}" alt="{{ product.Name }}">
+      </div>
+
+      <div>
+        <h2>{{ product.Name }}</h2>
+        <div class="price">₪{{ product.price }}</div>
+        <p class="desc">{{ product.Description }}</p>
+
+        <div class="actions">
+          <div class="qtyWrap">
+            Quantity:
+            <input type="number" id="qty" value="1" min="1">
+          </div>
+
+          <button class="btn btn-primary" id="addToCartBtn">Add to Cart</button>
+          <button class="btn btn-outline" id="addToFavoritesBtn">❤️ Add to Favorites</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= AI PRODUCT ADVISOR ================= -->
+    <div class="card ai-box">
+      <h3 class="ai-title">🤖 Ask the Smart Assistant about this product</h3>
+
+      <div class="ai-row">
+        <input
+          id="aiQuestion"
+          placeholder="Example: Who is this product for? How do I use it?"
+        >
+        <button class="btn btn-primary" id="askAiBtn">Ask AI</button>
+      </div>
+
+      <div id="aiAnswer" class="ai-answer"></div>
+    </div>
+
+  </div>
+
+  <!-- ================= JS ================= -->
+  <script type="module">
+    import { auth, db } from "/static/firebase.js";
+    import {
+      doc,
+      setDoc,
+      getDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+    import { onAuthStateChanged } from
+    "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+    const box = document.querySelector(".product-box");
+    const cartBtn = document.getElementById("addToCartBtn");
+    const favBtn = document.getElementById("addToFavoritesBtn");
+
+    // ================= CART + FAVORITES =================
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        cartBtn.onclick = () => alert("Please log in to add items to the cart.");
+        favBtn.onclick = () => alert("Please log in to add items to favorites.");
+        return;
+      }
+
+      cartBtn.onclick = async () => {
+        const qty = parseInt(document.getElementById("qty").value);
+
+        const cartRef = doc(db, "users", user.uid, "cart", box.dataset.id);
+        const snap = await getDoc(cartRef);
+
+        if (snap.exists()) {
+          await setDoc(cartRef, {
+            ...snap.data(),
+            qty: snap.data().qty + qty,
+            updatedAt: serverTimestamp()
+          });
+        } else {
+          await setDoc(cartRef, {
+            productId: box.dataset.id,
+            name: box.dataset.name,
+            price: Number(box.dataset.price),
+            imageUrl: box.dataset.image,
+            qty,
+            addedAt: serverTimestamp()
+          });
+        }
+
+        alert("Added to cart 🛒");
+      };
+
+      favBtn.onclick = async () => {
+        const favRef = doc(db, "users", user.uid, "favorites", box.dataset.id);
+        const snap = await getDoc(favRef);
+
+        if (snap.exists()) {
+          alert("This product is already in favorites ❤️");
+          return;
+        }
+
+        await setDoc(favRef, {
+          productId: box.dataset.id,
+          name: box.dataset.name,
+          price: Number(box.dataset.price),
+          imageUrl: box.dataset.image,
+          addedAt: serverTimestamp()
+        });
+
+        alert("Added to favorites ❤️");
+      };
+    });
+
+    // ================= AI =================
+    const askAiBtn = document.getElementById("askAiBtn");
+    const aiAnswer = document.getElementById("aiAnswer");
+
+    askAiBtn.onclick = async () => {
+      const question = document.getElementById("aiQuestion").value.trim();
+      if (!question) return;
+
+      aiAnswer.textContent = "🤖 Thinking...";
+
+      const res = await fetch("/ai-product", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question,
+          product: {
+            name: box.dataset.name,
+            description: {{ (product.Description or "")|tojson }}
+          }
+        })
+      });
+
+      const data = await res.json();
+      aiAnswer.textContent = data.answer || "No answer received.";
+    };
+  </script>
+
+</body>
+</html>

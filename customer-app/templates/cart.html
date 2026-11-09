@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>הסל שלי</title>
+
+  <style>
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background:#f6f3ee;
+      padding:40px 18px;
+      color:#111;
+    }
+
+    h1{
+      margin:0 0 18px;
+      font-size:34px;
+      letter-spacing:1px;
+      font-weight:700;
+    }
+  .back-btn{
+  background:#fff;
+  border:none;
+  border-radius:14px;
+  padding:14px;              /* ⬅️ מגדיל את הכפתור */
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+  margin-bottom:22px;
+}
+
+.back-btn img{
+  width:40px;               /* ⬅️ זה העיקר */
+  height:auto;
+}
+
+
+
+    .container{
+      max-width:1100px;
+      margin:0 auto;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap:22px;
+      align-items:start;
+    }
+
+    .card{
+      background:#fff;
+      border-radius:16px;
+      padding:18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+    }
+
+    /* LEFT: cart list */
+    #cart .cart-item{
+      background:#fff;
+      border:1px solid #eee;
+      border-radius:14px;
+      padding:14px;
+      display:flex;
+      gap:14px;
+      align-items:center;
+      margin-bottom:12px;
+    }
+
+   #cart .cart-item > img{
+  width:84px;
+  height:84px;
+  border-radius:12px;
+  object-fit: contain;   /* ✅ לא חותך */
+  background:#f3f3f3;
+  padding:6px;           /* יפה כשיש שקיפות */
+}
+
+
+    /* טקסטים בתוך פריט */
+    #cart .cart-item p{
+      margin:4px 0;
+      line-height:1.2;
+    }
+
+    /* כפתורי כמות */
+    .qty-btn{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      border:1px solid #e8e8e8;
+      background:#fff;
+      cursor:pointer;
+      font-size:16px;
+    }
+
+    /* delete */
+    .delete-btn{
+      margin-right:auto;
+      background:transparent;
+      border:none;
+      padding:6px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .bin-icon{
+      width:18px;
+      height:18px;
+    }
+
+    /* RIGHT: summary */
+    .summary-title{
+      font-weight:700;
+      margin:0 0 14px;
+      font-size:18px;
+    }
+
+    .row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:10px 0;
+      border-bottom:1px solid #f0f0f0;
+      font-size:14px;
+      color:#333;
+    }
+
+    .row:last-of-type{
+      border-bottom:none;
+    }
+
+    .total-row{
+      font-weight:800;
+      font-size:18px;
+      padding-top:14px;
+      color:#111;
+    }
+
+    .checkout-btn{
+      width:100%;
+      margin-top:18px;
+      background:#111;
+      color:#fff;
+      border:none;
+      padding:14px 18px;
+      font-size:15px;
+      border-radius:999px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+    }
+
+    #empty{
+      margin:10px 0 0;
+      color:#666;
+    }
+
+    /* responsive */
+    @media (max-width: 900px){
+      .grid{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>YOUR CART</h1>
+
+    <button id="backBtn" class="back-btn">
+  <img src="/static/images/left-arrow.png" alt="Back">
+</button>
+
+
+    <div class="grid">
+      <!-- LEFT -->
+      <div class="card">
+        <div id="cart"></div>
+        <p id="empty"></p>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="card">
+        <p class="summary-title">Order Summary</p>
+
+        <!-- שמרתי את total כמו אצלך, רק הצגתי אותו גם בסיכום -->
+        <div class="row">
+          <span>Total</span>
+          <span id="total"></span>
+        </div>
+
+        <button id="finishOrderBtn" class="checkout-btn">
+          Go to Checkout →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/static/cart.js"></script>
+</body>
+</html>
